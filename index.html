@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our New York Trip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,600;6..96,800&family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE occasion: a playful love note with puzzles in it
+   IDEA an escape room you play to reach a theatre: answer five locks, the curtain parts, the trip plays out like a playbill of tickets
+   PICTURE the quiz card on a velvet curtain; then a night skyline with a lit Broadway marquee and our polaroid
+   COLOUR velvet crimson ground, brass for locks and lights, ivory ticket paper
+   TYPE Bodoni Moda (playbill display) + Figtree (text)
+   LAYOUT gate: one centred quiz card; page: title + polaroid, skyline full-bleed, tickets in three columns, toys in two; all stack under 760px */
+:root{color-scheme:dark;--bg:#2a070c;--velvet:#5c0f1a;--velvet2:#3b0910;--brass:#d8b46a;--brass2:#a8823e;--paper:#f6eedf;--paperink:#2b1b14;--ink:#fbf2e4;--soft:#e9cfb8;--sky1:#170a1f;--sky2:#4a1424;--ok:#2f7d4f}
+:root[data-theme=light],:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 Figtree,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Bodoni Moda",Georgia,serif;font-weight:800;line-height:1.05;letter-spacing:-.02em;text-wrap:balance;margin:0}
+p{margin:0}
+img{max-width:100%}
+button{font-family:Figtree,sans-serif}
+button:focus-visible,input:focus-visible,label:focus-within{outline:3px solid var(--paper);outline-offset:2px}
+.band{padding-block:clamp(36px,5vw,72px);padding-left:max(5vw,16px);padding-right:max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+.h2{font-size:clamp(30px,4.5vw,46px)}
+.lead2{color:var(--soft);margin-top:10px;max-width:62ch}
+.btn{min-height:48px;padding:0 24px;border-radius:999px;border:0;background:var(--brass);color:#2a070c;font-weight:800;font-size:17px;cursor:pointer}
+.btn:hover{background:#e7c983}
+.btn:disabled{opacity:.45;cursor:default}
+.ghost{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--brass2);background:none;color:var(--brass);font-weight:600;font-size:15px;cursor:pointer}
+
+/* gate */
+.gate{position:fixed;inset:0;z-index:20;display:grid;place-items:center;overflow:auto;padding:24px 16px}
+.cur{position:fixed;top:0;bottom:0;width:50.5%;background:repeating-linear-gradient(90deg,var(--velvet) 0 34px,#741424 34px 52px,var(--velvet2) 52px 70px);box-shadow:inset 0 -60px 80px rgba(0,0,0,.45);transition:transform 1.6s cubic-bezier(.7,0,.2,1)}
+.cur.l{left:0}.cur.r{right:0}
+.cur::after{content:"";position:absolute;left:0;right:0;top:0;height:46px;background:linear-gradient(var(--brass2),#6d521f);border-bottom:3px solid var(--brass)}
+.quiz{position:relative;z-index:2;width:min(560px,100%);background:var(--paper);color:var(--paperink);border-radius:18px;padding:clamp(20px,4vw,32px);box-shadow:0 24px 60px rgba(0,0,0,.5);transition:opacity .5s}
+.locks{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:16px}
+.locks svg{width:26px;height:30px}
+.locks .lab{margin-left:auto;font-size:14px;font-weight:600;color:#6b5446;white-space:nowrap}
+.lk path{transition:transform .4s}
+.lk.done path{transform:translateY(-5px)}
+.quiz h1{font-size:clamp(28px,5.5vw,40px);color:var(--velvet)}
+.quiz .q{font:700 clamp(21px,3.6vw,26px)/1.2 "Bodoni Moda",Georgia,serif;margin-top:6px;text-wrap:balance}
+.quiz .qimg{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;margin-top:14px}
+.opts{display:grid;gap:10px;margin-top:18px}
+.opt{min-height:52px;text-align:left;padding:10px 16px;border-radius:12px;border:2px solid #d9c7a7;background:#fffaf0;color:var(--paperink);font-size:17px;font-weight:600;cursor:pointer}
+.opt:hover{border-color:var(--brass2)}
+.opt.right{border-color:var(--ok);background:#e3f2e7}
+.opt.wrong{border-color:#b3261e;background:#f8e1de;animation:shake .35s}
+.fb{min-height:52px;margin-top:14px;font-size:16px;font-weight:600;color:var(--velvet)}
+.qfoot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-top:6px}
+.skip{background:none;border:0;color:#6b5446;text-decoration:underline;font-size:15px;cursor:pointer;min-height:44px;padding:0}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.gate.done{pointer-events:none}
+.gate.done .cur.l{transform:translateX(-102%)}
+.gate.done .cur.r{transform:translateX(102%)}
+.gate.done .quiz{opacity:0}
+.gate.gone{display:none}
+
+/* hero */
+.hero{background:linear-gradient(var(--sky1),var(--sky2));padding-bottom:0}
+.hero h1{font-size:clamp(40px,7vw,80px)}
+.sub{color:var(--soft);font-size:clamp(17px,2vw,20px);margin-top:14px;max-width:46ch}
+.top{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:center}
+.count{display:inline-block;margin-top:18px;background:var(--brass);color:#2a070c;border-radius:10px;padding:8px 14px;font-weight:800;font-variant-numeric:tabular-nums}
+.facts{display:grid;gap:10px;margin-top:24px;max-width:560px}
+.fact{display:flex;gap:12px;align-items:baseline;border-top:1px solid rgba(216,180,106,.35);padding-top:8px}
+.fact b{font:800 26px/1 "Bodoni Moda",Georgia,serif;color:var(--brass);min-width:1.1em}
+.polaroid{margin:0;background:#fffaf0;padding:14px 14px 0;border-radius:4px;transform:rotate(2.5deg);box-shadow:0 18px 40px rgba(0,0,0,.45);max-width:520px;justify-self:center;cursor:pointer;transition:transform .4s}
+.polaroid:hover{transform:rotate(-1deg) scale(1.02)}
+.polaroid img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover}
+.polaroid figcaption{color:#2b1b14;font:600 17px/1.35 "Bodoni Moda",Georgia,serif;padding:14px 6px 18px;text-align:center;min-height:3.6em}
+.fig{position:relative;height:clamp(240px,34vw,420px);margin-top:28px;margin-left:calc(-1*max(5vw,16px));margin-right:calc(-1*max(5vw,16px))}
+.fig svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.twinkle{animation:tw 3s infinite alternate}
+@keyframes tw{to{opacity:.35}}
+
+/* tickets */
+.tbar{display:flex;flex-wrap:wrap;gap:16px;align-items:end;justify-content:space-between}
+.tix{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin-top:28px}
+.tk{background:var(--paper);color:var(--paperink);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.stub{background:var(--velvet);color:var(--ink);padding:16px 20px 18px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-bottom:2px dashed var(--paper)}
+.tk.show .stub{background:#1a0a12}
+.tk.bday .stub{background:#8a5a12}
+.tk.bday .kind{color:#fff1c7}
+.day{font:800 24px/1 "Bodoni Moda",Georgia,serif;white-space:nowrap}
+.kind{font-size:14px;font-weight:600;color:var(--brass);white-space:nowrap}
+.tease{padding:22px 20px;display:grid;gap:14px;justify-items:start;flex:1;align-content:center}
+.tease p{font:700 22px/1.25 "Bodoni Moda",Georgia,serif}
+.tease .clue{font:16px/1.5 Figtree,sans-serif;color:#5a4336}
+.tease .btn{background:var(--velvet);color:var(--paper)}
+.tease .btn:hover{background:#741424}
+.tbody{padding:20px 20px 22px;display:none;gap:12px;align-content:start;flex:1}
+.tk.open .tease{display:none}
+.tk.open .tbody{display:grid;animation:rip .5s ease-out}
+@keyframes rip{from{opacity:0;transform:translateY(10px)}}
+.tk h3{font-size:25px}
+.tk p{font-size:16px;color:#4a352a}
+.when{font-weight:800;color:var(--paperink)!important}
+.where{font-size:15px;font-weight:600;color:var(--velvet)!important}
+
+/* wish */
+.wish{background:var(--velvet2)}
+.wishgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(20px,4vw,56px);align-items:center}
+.cakebox{position:relative;max-width:440px;width:100%;justify-self:center}
+.cakebox svg{display:block;width:100%;height:auto}
+.flame{cursor:pointer;transform-origin:center bottom;transform-box:fill-box;animation:flick .5s infinite alternate}
+.flame.out{opacity:0;pointer-events:none;transition:opacity .3s}
+@keyframes flick{to{transform:scale(.88,1.08)}}
+.smoke{opacity:0}
+.smoke.on{animation:smoke 1.2s ease-out forwards}
+@keyframes smoke{0%{opacity:.7;transform:translateY(0)}100%{opacity:0;transform:translateY(-30px)}}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.confetti i{position:absolute;top:30%;width:9px;height:14px;border-radius:2px;animation:fall 1.8s ease-out forwards}
+@keyframes fall{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}}
+
+/* toys */
+.toys{background:var(--velvet2)}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);margin-top:28px}
+.panel{background:rgba(0,0,0,.24);border:1px solid rgba(216,180,106,.35);border-radius:16px;padding:clamp(18px,3vw,28px)}
+.panel h3{font-size:26px}
+.panel .lead2{margin-top:6px;font-size:16px}
+.bet{margin-top:20px}
+.bet label{display:flex;justify-content:space-between;gap:10px;font-weight:600}
+.bet output{color:var(--brass);font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;height:44px;accent-color:var(--brass);margin:0}
+.verdict{font:600 18px/1.35 "Bodoni Moda",Georgia,serif;color:var(--paper);margin-top:4px;min-height:2.7em}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
+.copied{color:var(--brass);font-weight:600;font-size:15px}
+.pack{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px}
+.pack label{display:flex;gap:12px;align-items:flex-start;background:var(--paper);color:var(--paperink);border-radius:12px;padding:12px 14px;cursor:pointer;min-height:48px}
+.pack input{width:22px;height:22px;margin-top:2px;accent-color:var(--velvet);flex:none}
+.pack b{color:var(--velvet)}
+.pack input:checked+span{text-decoration:line-through;opacity:.6}
+.meter{height:10px;border-radius:99px;background:rgba(255,255,255,.12);margin-top:16px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--brass);transition:width .4s}
+.packmsg{margin-top:8px;font-size:15px;color:var(--soft)}
+
+/* show */
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:start}
+.cols p+p{margin-top:14px}
+
+/* terms */
+.terms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:22px 0 0;padding:0;list-style:none}
+.terms li{background:var(--paper);color:var(--paperink);border-radius:12px;padding:16px 18px;font-size:16px}
+.terms b{color:var(--velvet)}
+.sign{position:relative;margin-top:22px;min-height:160px;border:1px dashed rgba(216,180,106,.5);border-radius:16px;padding:18px}
+.sign p{color:var(--soft);font-size:16px}
+#no{position:absolute;transition:left .25s,top .25s}
+.stamp{display:none;margin-top:14px;font:800 30px/1 "Bodoni Moda",Georgia,serif;color:var(--brass);border:4px solid var(--brass);border-radius:10px;padding:8px 16px;transform:rotate(-6deg);width:max-content;max-width:100%}
+.sign.agreed .stamp{display:block;animation:rip .4s}
+
+/* note */
+.letter{background:var(--paper);color:var(--paperink);border-radius:16px;padding:clamp(24px,4vw,48px);max-width:760px;margin:0 auto}
+.letter h2{font-size:clamp(30px,4vw,44px);color:var(--velvet)}
+.letter p{margin-top:14px;font-size:17px}
+.sig{font:600 26px "Bodoni Moda",Georgia,serif;color:var(--velvet);margin-top:22px}
+footer{text-align:center;color:var(--soft);font-size:14px;padding:28px 16px 40px}
+
+@media(max-width:760px){.top,.cols,.grid2,.terms,.wishgrid,.tix{grid-template-columns:minmax(0,1fr)}.polaroid{transform:rotate(1.5deg)}}
+@media(prefers-reduced-motion:reduce){.cur,.quiz,.polaroid,.meter i{transition:none}.twinkle,.flame,.smoke.on,.confetti i,.opt.wrong,.tk.open .tbody,.sign.agreed .stamp{animation:none}}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="qTitle">
+  <div class="cur l"></div><div class="cur r"></div>
+  <div class="quiz" id="quiz">
+    <div class="locks" id="locks" aria-hidden="true"></div>
+    <h1 id="qTitle">You've been locked in.</h1>
+    <div id="qArea"></div>
+    <p class="fb" id="fb" aria-live="polite"></p>
+    <div class="qfoot">
+      <button class="skip" id="skip" type="button">I give up (this will be held against me)</button>
+      <button class="btn" id="next" type="button" disabled>Next lock</button>
+    </div>
+  </div>
+</div>
+
+<main id="main">
+  <section class="band hero">
+    <div class="wrap">
+      <div class="top">
+        <div>
+          <h1>Happy birthday. Pack a bag, we're going back to New York.</h1>
+          <p class="sub">You're turning a year older on Monday, November 23, and we're spending it in New York. Same city, much better plan: two escape rooms, a birthday dinner, and Broadway.</p>
+          <p class="count" id="count">Birthday countdown loading.</p>
+          <div class="facts" aria-label="The trip at a glance">
+            <div class="fact"><b>2</b><span>escape rooms we will definitely not argue in</span></div>
+            <div class="fact"><b>1</b><span>birthday dinner at a former Michelin-star spot, where you are not allowed to check the bill</span></div>
+            <div class="fact"><b>1</b><span>Broadway show where things get very, very upside down</span></div>
+            <div class="fact"><b>0</b><span>excuses accepted. It's booked. You're coming.</span></div>
+          </div>
+        </div>
+        <figure class="polaroid" id="pol" tabindex="0" role="button" aria-label="Tap the photo for another caption">
+          <img src="us.jpg" alt="The two of us taking a selfie under the Manhattan Bridge in DUMBO on a bright winter day" width="1400" height="1050">
+          <figcaption id="cap">Previously on Us: DUMBO, under the Manhattan Bridge. (Tap me.)</figcaption>
+        </figure>
+      </div>
+      <div class="fig"><svg id="sky" viewBox="0 0 1400 440" preserveAspectRatio="xMidYMax slice" role="img" aria-label="Manhattan skyline at night with a lit Broadway marquee"></svg></div>
+    </div>
+  </section>
+
+  <section class="band wish">
+    <div class="wrap wishgrid">
+      <div>
+        <h2 class="h2">Make a wish first</h2>
+        <p class="lead2" id="wishmsg">Tap each candle to blow it out. Think of something good.</p>
+        <button class="ghost" id="relight" type="button" style="margin-top:16px">Relight the candles</button>
+      </div>
+      <div class="cakebox"><svg id="cake" viewBox="0 0 360 260" role="img" aria-label="A birthday cake with five candles. Tap the flames to blow them out."></svg><div class="confetti" id="confetti" aria-hidden="true"></div></div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <div class="tbar">
+        <div>
+          <h2 class="h2">Your tickets</h2>
+          <p class="lead2">Four tickets, sealed. Read the clue, guess what it is, then tear it open. Handpicked by someone who reads the TERPECA list for fun.</p>
+        </div>
+        <button class="ghost" id="all" type="button">Tear them all open</button>
+      </div>
+      <div class="tix">
+        <article class="tk" id="t1">
+          <div class="stub"><span class="day">Mon, Nov 23</span><span class="kind">Escape room</span></div>
+          <div class="tease">
+            <p>Clue: someone left a light on for the ghosts.</p>
+            <p class="clue">It's in Brooklyn. It's private. It promises no jump scares. I don't trust it.</p>
+            <button class="btn" type="button" data-open="t1">Tear it open</button>
+          </div>
+          <div class="tbody">
+            <h3>Ghost Light at MyssTic</h3>
+            <p class="when">5:45 PM · be there by 5:35</p>
+            <p>Our mission: keep the spirits happy by getting the light back on. Private room, so nobody else will witness us arguing. They promise no jump scares, which means I'll be the one screaming.</p>
+            <p class="where">794 Union St (basement), Park Slope, Brooklyn</p>
+          </div>
+        </article>
+        <article class="tk bday" id="t4">
+          <div class="stub"><span class="day">Mon, Nov 23</span><span class="kind">Birthday dinner</span></div>
+          <div class="tease">
+            <p>Clue: the name means passion. Or obsession. Possibly madness.</p>
+            <p class="clue">Indian, very fancy, and it held a Michelin star for eight years straight. There's no à la carte menu, so tonight you trust the chef.</p>
+            <button class="btn" type="button" data-open="t4">Tear it open</button>
+          </div>
+          <div class="tbody">
+            <h3>Junoon</h3>
+            <p class="when">8:30 PM · main dining room</p>
+            <p>Your birthday dinner at the place that held a Michelin star for eight years, until 2019. Set menus only, about two hours, and if we go for the Journey Through India tasting menu, rumour has it there's a puzzle involved. Of course there is. You're not allowed to look at the bill.</p>
+            <p class="where">19 W 24th St, between 5th and 6th Ave</p>
+          </div>
+        </article>
+        <article class="tk" id="t2">
+          <div class="stub"><span class="day">Tue, Nov 24</span><span class="kind">Escape room</span></div>
+          <div class="tease">
+            <p>Clue: pack a whip and a fedora.</p>
+            <p class="clue">There's a plane crash, a jungle and an ancient temple. Somehow it's in Times Square.</p>
+            <button class="btn" type="button" data-open="t2">Tear it open</button>
+          </div>
+          <div class="tbody">
+            <h3>Ruins: Forbidden Treasure</h3>
+            <p class="when">1:50 PM · be there by 1:35</p>
+            <p>Our plane crashes in the jungle and we find an ancient temple full of treasure. Basically Indiana Jones, but with more bickering. It's a shared game, so strangers might join us. Please act normal.</p>
+            <p class="where">The Escape Game, 1619 Broadway, Times Square</p>
+          </div>
+        </article>
+        <article class="tk show" id="t3">
+          <div class="stub"><span class="day">Tue, Nov 24</span><span class="kind">Broadway</span></div>
+          <div class="tease">
+            <p>Clue: Hawkins, Indiana. 1959. Before it all went wrong.</p>
+            <p class="clue">Two seats, one mezzanine, and a lot of "how did they do that?"</p>
+            <button class="btn" type="button" data-open="t3">Tear it open</button>
+          </div>
+          <div class="tbody">
+            <h3>Stranger Things: The First Shadow</h3>
+            <p class="when">7:00 PM · curtain is prompt</p>
+            <p>We escape a temple at 2 and enter the Upside Down at 7. Both are a few blocks apart, which leaves exactly enough time for dinner and a debrief about whose fault it was.</p>
+            <p class="where">Marquis Theatre · Mezzanine, Row L, seats 31 and 33</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band toys">
+    <div class="wrap">
+      <h2 class="h2">Place your bets</h2>
+      <p class="lead2">Before we go, make your predictions and send them to me. Winner gets bragging rights and picks dinner.</p>
+      <div class="grid2">
+        <div class="panel">
+          <h3>How much time will we have left?</h3>
+          <p class="lead2">Slide to predict the minutes left on the clock when we get out.</p>
+          <div class="bet">
+            <label for="b1">Ghost Light (Monday) <output id="o1" for="b1"></output></label>
+            <input type="range" id="b1" min="0" max="30" value="8">
+            <p class="verdict" id="v1"></p>
+          </div>
+          <div class="bet">
+            <label for="b2">Ruins (Tuesday) <output id="o2" for="b2"></output></label>
+            <input type="range" id="b2" min="0" max="30" value="5">
+            <p class="verdict" id="v2"></p>
+          </div>
+          <div class="row">
+            <button class="btn" id="copy" type="button">Copy my bets</button>
+            <span class="copied" id="copied" aria-live="polite"></span>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Packing list</h3>
+          <p class="lead2">Tick things off as you pack. This page remembers.</p>
+          <ul class="pack" id="pack"></ul>
+          <div class="meter"><i id="meter"></i></div>
+          <p class="packmsg" id="packmsg" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap cols">
+      <div>
+        <h2 class="h2">Birthday Monday</h2>
+        <ol class="pack" style="margin-top:16px">
+          <li><label style="cursor:default"><span><b>5:35 PM</b> Arrive at MyssTic, Park Slope</span></label></li>
+          <li><label style="cursor:default"><span><b>5:45 PM</b> Ghost Light. Turn on the light, keep the spirits happy</span></label></li>
+          <li><label style="cursor:default"><span><b>About 7 PM</b> Escape, then head into Manhattan</span></label></li>
+          <li><label style="cursor:default"><span><b>8:30 PM</b> Birthday dinner at Junoon</span></label></li>
+        </ol>
+      </div>
+      <div>
+        <h2 class="h2">Tuesday is a big day</h2>
+        <ol class="pack" style="margin-top:16px">
+          <li><label style="cursor:default"><span><b>1:35 PM</b> Arrive at The Escape Game, Times Square</span></label></li>
+          <li><label style="cursor:default"><span><b>1:50 PM</b> Crash a plane, find a temple, take the treasure</span></label></li>
+          <li><label style="cursor:default"><span><b>Before the show</b> Dinner nearby, plus a full debrief</span></label></li>
+          <li><label style="cursor:default"><span><b>7:00 PM</b> Curtain up at the Marquis</span></label></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap cols">
+      <div>
+        <h2 class="h2">About the show</h2>
+        <p style="margin-top:16px">The First Shadow goes back to 1959 in Hawkins, Indiana, years before the series, and follows a teenage Henry Creel whose family is hoping for a fresh start. It's written by Kate Trefry from a story by the Duffer Brothers, Jack Thorne and Trefry, and directed by Stephen Daldry.</p>
+        <p style="color:var(--soft)">It started in London's West End in 2023, opened on Broadway in April 2025, and won a Special Tony Award for its staging.</p>
+      </div>
+      <div>
+        <h2 class="h2">Good to know</h2>
+        <ul class="pack" style="margin-top:16px">
+          <li><label style="cursor:default"><span><b>Junoon</b> held a Michelin star from 2011 to 2019. Set menus only, about two hours, and they hold the table for 15 minutes if we're late.</span></label></li>
+          <li><label style="cursor:default"><span><b>MyssTic</b> wants us there 5 to 10 minutes early. The Escape Game wants 15.</span></label></li>
+          <li><label style="cursor:default"><span><b>The show</b> starts on time. Latecomers wait in the lobby.</span></label></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="band toys">
+    <div class="wrap">
+      <h2 class="h2">Terms and conditions</h2>
+      <p class="lead2">Please read carefully. Signing is mandatory.</p>
+      <ol class="terms">
+        <li><b>No "I told you so" inside an escape room.</b> Outside the room it's fair game, and I will be saying it.</li>
+        <li><b>It's your birthday, so you win one argument.</b> Just one. Choose wisely.</li>
+        <li><b>The selfie under the bridge must be retaken.</b> Same spot, same pose, new memories.</li>
+        <li><b>If the lights go out in the theatre, I'm grabbing your arm.</b> This is not negotiable.</li>
+      </ol>
+      <div class="sign" id="sign">
+        <p id="signp">Do you agree to the terms?</p>
+        <div class="row"><button class="btn" id="yes" type="button">I agree</button></div>
+        <button class="ghost" id="no" type="button" style="left:150px;top:62px">I disagree</button>
+        <div class="stamp">Signed. No take-backs.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="letter">
+      <h2>Happy birthday</h2>
+      <p>Because you love a good puzzle, and I love watching you solve one, mostly because of the face you make right before you get it. Because there's nobody I'd rather be locked in a room with. Literally. I checked.</p>
+      <p>And because you deserve a birthday that's as much fun as you are. So clear your calendar. The clock is already ticking.</p>
+      <p class="sig">Love, your favourite escape room partner</p>
+    </div>
+    <footer>
+      Made for you, with love and an unreasonable number of puzzles.<br>
+      <button class="ghost" id="again" type="button" style="margin-top:10px">Lock it again</button>
+    </footer>
+  </section>
+</main>
+
+<script>
+{
+  const $=id=>document.getElementById(id);
+  const store={get(k){try{return JSON.parse(localStorage.getItem('nyc_'+k))}catch(e){return null}},set(k,v){try{localStorage.setItem('nyc_'+k,JSON.stringify(v))}catch(e){}}};
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const gate=$('gate'),main=$('main');
+
+  /* quiz */
+  const Q=[
+    {q:"What's our favourite way to spend a weekend?",o:["Brunch, like normal people","Paying strangers to lock us in rooms","A relaxing hike","Doing absolutely nothing"],a:1,
+     yes:"Correct. We have a problem, and we're not fixing it.",no:["Be honest. Look at our credit card statements.","Nope. Think locks. Think timers."]},
+    {q:"Who is the bigger puzzle genius in this relationship?",o:["You","Me","Depends who you ask","We're equally brilliant"],a:-1,
+     any:["Bold. Noted. This will be tested on Monday.","Correct, and I'm framing this.","Coward's answer. Accepted.","Diplomatic. I'll allow it."]},
+    {q:"Where was this photo taken?",img:"us.jpg",o:["Under the Brooklyn Bridge","Under the Manhattan Bridge","Under the Golden Gate","In front of a green screen"],a:1,
+     yes:"Yes! DUMBO, Manhattan Bridge. The sign in the background is a trap.",no:["Classic mistake. Look at the bridge, not the sign.","Look closer. Is that tower stone or steel?"]},
+    {q:"What's scarier?",o:["The Upside Down","A ghost that won't let us leave","Me, when the clock says 2 minutes left","Getting lost in a jungle temple"],a:2,
+     yes:"Correct. You've seen it. You know.",no:["Respectfully, no. You've seen me at 2 minutes left.","Scary, yes. But not 'me at 2 minutes left' scary."]},
+    {q:"What would you want to eat on your birthday?",o:["A street-corner hot dog","Whatever's in the hotel minibar","Fancy Indian food","Cereal, for dinner, like a champion"],a:2,
+     yes:"Good answer. Very good answer. No further questions.",no:["Wrong, but don't worry, I've already decided for you.","Interesting choice. Try again, and think fancy."]},
+    {q:"How many escape rooms is a reasonable number for one trip?",o:["Zero, we're on vacation","One, to be polite","Two","Seven, and a nap in between"],a:2,
+     yes:"Two. Exactly two. I may have already booked them.",no:["Too low. Who do you think you're dating?","Don't tempt me. The answer is lower than that."]},
+    {q:"Final lock. What's happening on November 23?",o:["Just a regular Monday","Thanksgiving","Your birthday","National Escape Room Day"],a:2,
+     yes:"Your birthday! And I've planned the whole thing.",no:["Wow. Okay. Try again before I get offended.","Close, but Thanksgiving is Thursday. Think about you."]}
+  ];
+  let qi=0,locked=true;
+  const lockSvg=d=>`<svg class="lk${d?' done':''}" viewBox="0 0 30 34"><path d="M8 15V10a7 7 0 0 1 14 0v5" fill="none" stroke="${d?'#2f7d4f':'#a8823e'}" stroke-width="3.5"/><rect x="3" y="14" width="24" height="19" rx="4" fill="${d?'#2f7d4f':'#a8823e'}"/></svg>`;
+  const drawLocks=()=>{$('locks').innerHTML=Q.map((_,i)=>lockSvg(i<qi)).join('')+`<span class="lab">Lock ${Math.min(qi+1,Q.length)} of ${Q.length}</span>`;};
+  const drawQ=()=>{
+    const q=Q[qi];drawLocks();$('fb').textContent='';$('next').disabled=true;
+    $('next').textContent=qi===Q.length-1?'Open the curtain':'Next lock';
+    $('qTitle').textContent=qi===0?"You've been locked in.":"Keep going.";
+    $('qArea').innerHTML=(qi===0?'<p style="margin-top:8px;color:#5a4336">Your surprise is behind this curtain. Answer seven questions to get out. Pay attention, birthday boy.</p>':'')+
+      `<p class="q">${q.q}</p>`+(q.img?`<img class="qimg" src="${q.img}" alt="A selfie of us under a bridge in the snow">`:'')+
+      `<div class="opts">${q.o.map((t,i)=>`<button class="opt" type="button" data-i="${i}">${t}</button>`).join('')}</div>`;
+    q.tries=0;
+  };
+  $('qArea').addEventListener('click',e=>{
+    const b=e.target.closest('.opt');if(!b||!$('next').disabled)return;
+    const q=Q[qi],i=+b.dataset.i;
+    if(q.a===-1||i===q.a){
+      b.classList.add('right');$('fb').textContent=q.a===-1?q.any[i]:q.yes;
+      $('qArea').querySelectorAll('.opt').forEach(o=>o.disabled=true);
+      $('next').disabled=false;$('next').focus();
+    }else{
+      b.classList.remove('wrong');void b.offsetWidth;b.classList.add('wrong');
+      $('fb').textContent=q.no[q.tries++%q.no.length];
+    }
+  });
+  const open=()=>{
+    locked=false;main.removeAttribute('inert');
+    gate.classList.add('done');setTimeout(()=>gate.classList.add('gone'),reduce?0:1700);
+  };
+  $('next').addEventListener('click',()=>{
+    qi++;
+    if(qi>=Q.length){drawLocks();$('qTitle').textContent='Unlocked.';$('qArea').innerHTML='<p class="q">All seven locks are open. Happy birthday. Curtain up.</p>';$('fb').textContent='';$('next').disabled=true;setTimeout(open,reduce?0:900);}
+    else drawQ();
+  });
+  $('skip').addEventListener('click',open);
+  $('again').addEventListener('click',()=>{
+    qi=0;drawQ();gate.classList.remove('gone');main.setAttribute('inert','');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>gate.classList.remove('done')));window.scrollTo(0,0);
+  });
+  drawQ();
+  main.setAttribute('inert','');
+
+  /* countdown */
+  const target=Date.parse('2026-11-23T00:00:00-05:00');
+  const tick=()=>{
+    const ms=target-Date.now();
+    const now=Date.now();
+    if(now>=Date.parse('2026-11-23T00:00:00-05:00')&&now<Date.parse('2026-11-24T00:00:00-05:00')){$('count').textContent='It\'s your birthday! Happy birthday!';return;}
+    if(ms<=0){$('count').textContent=now<Date.parse('2026-11-25T00:00:00-05:00')?'We are officially locked in. Good luck to us.':'Escaped. Twice. Legends.';return;}
+    const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);
+    $('count').textContent=`Your birthday is in ${d} day${d===1?'':'s'}, ${h} hr${h===1?'':'s'}, ${m} min`;
+  };
+  tick();const timer=setInterval(tick,30000);
+
+  /* polaroid captions */
+  const caps=["Previously on Us: DUMBO, under the Manhattan Bridge. (Tap me.)","Two people about to be very good at escape rooms.","Coming soon: the sequel. Same city, more locks.","Proof we can survive New York together. Now let's survive a ghost."];
+  let ci=0;const nextCap=()=>{ci=(ci+1)%caps.length;$('cap').textContent=caps[ci];};
+  $('pol').addEventListener('click',nextCap);
+  $('pol').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();nextCap();}});
+
+  /* tickets */
+  const opened=store.get('tix')||[];
+  const openT=id=>{$(id).classList.add('open');if(!opened.includes(id)){opened.push(id);store.set('tix',opened);}};
+  opened.forEach(id=>$(id)&&$(id).classList.add('open'));
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openT(b.dataset.open);});
+  $('all').addEventListener('click',()=>['t1','t4','t2','t3'].forEach(openT));
+
+  /* bets */
+  const verdict=m=>m===0?"Escaping on the final second. Cinematic. Terrifying.":m<=3?"Sweaty palms, raised voices, glorious finish.":m<=8?"Comfortable, but someone will still panic.":m<=15?"Confident. Maybe too confident.":"Absolutely delusional. I love that for you.";
+  const saved=store.get('bets');if(saved){$('b1').value=saved[0];$('b2').value=saved[1];}
+  const drawBets=()=>{
+    const a=+$('b1').value,b=+$('b2').value;
+    $('o1').textContent=a+' min left';$('o2').textContent=b+' min left';
+    $('v1').textContent=verdict(a);$('v2').textContent=verdict(b);store.set('bets',[a,b]);$('copied').textContent='';
+  };
+  $('b1').addEventListener('input',drawBets);$('b2').addEventListener('input',drawBets);drawBets();
+  $('copy').addEventListener('click',async()=>{
+    const t=`My official bets: Ghost Light with ${$('b1').value} min left, Ruins with ${$('b2').value} min left. Loser buys dinner.`;
+    try{await navigator.clipboard.writeText(t);$('copied').textContent='Copied. Now text it to me.';}
+    catch(e){$('copied').textContent=t;}
+  });
+
+  /* packing */
+  const items=[["Comfy shoes","escape rooms involve crawling, climbing and pacing dramatically"],["Warm layers","it's New York in November"],["One theatre outfit","not fancy, just \"I did not just crawl through a vent\""],["Something nice for Junoon","it's your birthday dinner, dress like it"],["Phone charger","for the 400 photos I will make you take"],["Your puzzle brain","fully charged. Mine runs on coffee and spite"],["Snacks","for the post-room debrief"]];
+  const got=store.get('pack')||[];
+  $('pack').innerHTML=items.map(([b,t],i)=>`<li><label><input type="checkbox" id="p${i}" ${got[i]?'checked':''}><span><b>${b}:</b> ${t}</span></label></li>`).join('');
+  const drawPack=()=>{
+    const s=items.map((_,i)=>$('p'+i).checked);store.set('pack',s);
+    const n=s.filter(Boolean).length;$('meter').style.width=(n/items.length*100)+'%';
+    $('packmsg').textContent=n===items.length?'Fully packed. Show-off.':n===0?'Nothing packed yet. Classic.':`${n} of ${items.length} packed. Keep going.`;
+  };
+  $('pack').addEventListener('change',drawPack);drawPack();
+
+  /* terms */
+  const no=$('no'),sign=$('sign');let dodges=0;
+  const lines=["Nice try.","That button is decorative.","Disagreeing is not an option.","You're only making this harder.","Okay, you're very persistent. Still no."];
+  const dodge=e=>{
+    if(sign.classList.contains('agreed'))return;
+    e.preventDefault();
+    const W=sign.clientWidth-no.offsetWidth-16,H=sign.clientHeight-no.offsetHeight-12;
+    const y=$('yes'),yr={l:y.offsetLeft,t:y.offsetTop,r:y.offsetLeft+y.offsetWidth,b:y.offsetTop+y.offsetHeight};
+    let L=8,T=48;
+    for(let k=0;k<20;k++){L=Math.max(8,Math.random()*W);T=Math.max(48,Math.random()*H);if(L>yr.r+8||L+no.offsetWidth<yr.l-8||T>yr.b+8||T+no.offsetHeight<yr.t-8)break;}
+    no.style.left=L+'px';no.style.top=T+'px';
+    $('signp').textContent=lines[dodges++%lines.length];
+  };
+  no.addEventListener('pointerenter',dodge);no.addEventListener('click',dodge);no.addEventListener('focus',dodge);
+  $('yes').addEventListener('click',()=>{sign.classList.add('agreed');no.style.display='none';$('signp').textContent='Excellent decision. Legally binding.';store.set('signed',true);});
+  if(store.get('signed')){sign.classList.add('agreed');no.style.display='none';$('signp').textContent='Excellent decision. Legally binding.';}
+
+  /* cake */
+  const cake=$('cake');const N=5;
+  let c='<ellipse cx="180" cy="238" rx="150" ry="14" fill="#12050a" opacity=".5"/>';
+  c+='<rect x="50" y="150" width="260" height="86" rx="14" fill="#f6eedf"/><rect x="50" y="150" width="260" height="20" rx="10" fill="#fff"/>';
+  c+='<path d="M50 168c20 18 30 0 52 14s32-10 52 4 32-8 52 4 34-12 52 2 32-6 52 2V160H50z" fill="#c2344d"/>';
+  c+='<rect x="80" y="110" width="200" height="46" rx="10" fill="#f9e7cf"/><path d="M80 124c16 12 24 0 40 9s26-6 40 2 26-6 40 2 24-7 40 1V118H80z" fill="#c2344d"/>';
+  c+='<rect x="50" y="210" width="260" height="8" fill="#d8b46a" opacity=".7"/>';
+  for(let i=0;i<N;i++){const x=104+i*38;
+    c+=`<rect x="${x-4}" y="66" width="8" height="46" rx="3" fill="${['#d8b46a','#fff6e6','#c2344d','#fff6e6','#d8b46a'][i]}"/>`;
+    c+=`<circle class="smoke" id="s${i}" cx="${x}" cy="54" r="6" fill="#d9cfc7"/>`;
+    c+=`<g class="flame" data-f="${i}" role="button" tabindex="0" aria-label="Candle ${i+1} flame"><circle cx="${x}" cy="50" r="16" fill="transparent"/><path d="M${x} 36c8 10 9 16 0 26-9-10-8-16 0-26z" fill="#ffb02e"/><path d="M${x} 46c4 5 4 9 0 13-4-4-4-8 0-13z" fill="#fff3b0"/></g>`;}
+  cake.innerHTML=c;
+  let blown=0;
+  const burst=()=>{if(reduce)return;const box=$('confetti');box.innerHTML=Array.from({length:60},(_,i)=>`<i style="left:${40+Math.random()*20}%;background:${['#d8b46a','#c2344d','#fff6e6','#f3d38c'][i%4]};--dx:${(Math.random()*2-1)*220}px;--dy:${-60-Math.random()*140+Math.random()*320}px;animation-delay:${Math.random()*.2}s"></i>`).join('');};
+  const blow=f=>{if(f.classList.contains('out'))return;f.classList.add('out');const i=f.dataset.f;const sm=$('s'+i);sm.classList.remove('on');void sm.getBoundingClientRect();sm.classList.add('on');blown++;
+    $('wishmsg').textContent=blown<N?`${N-blown} to go. Keep blowing.`:'Wish received. It will be delivered in New York. Happy birthday!';
+    if(blown===N)burst();};
+  cake.addEventListener('click',e=>{const f=e.target.closest('.flame');if(f)blow(f);});
+  cake.addEventListener('keydown',e=>{const f=e.target.closest('.flame');if(f&&(e.key==='Enter'||e.key===' ')){e.preventDefault();blow(f);}});
+  $('relight').addEventListener('click',()=>{cake.querySelectorAll('.flame').forEach(f=>f.classList.remove('out'));blown=0;$('confetti').innerHTML='';$('wishmsg').textContent='Tap each candle to blow it out. Think of something good.';});
+
+  /* skyline */
+  const s=$('sky');
+  let seed=20261;const rnd=()=>(seed=seed*16807%2147483647)/2147483647;
+  let out='<defs><linearGradient id="bA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2a1030"/><stop offset="1" stop-color="#1a0a1e"/></linearGradient><linearGradient id="bB" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a1426"/><stop offset="1" stop-color="#240c18"/></linearGradient><radialGradient id="moon"><stop offset="0" stop-color="#fff6e0"/><stop offset="1" stop-color="#f3dca8"/></radialGradient><radialGradient id="glow"><stop offset="0" stop-color="#d8b46a" stop-opacity=".55"/><stop offset="1" stop-color="#d8b46a" stop-opacity="0"/></radialGradient></defs>';
+  for(let i=0;i<60;i++){out+=`<circle class="${i%3?'':'twinkle'}" cx="${(rnd()*1400).toFixed(0)}" cy="${(rnd()*170).toFixed(0)}" r="${(rnd()*1.6+.5).toFixed(1)}" fill="#fff3d6" opacity="${(rnd()*.6+.3).toFixed(2)}"/>`;}
+  out+='<circle cx="1180" cy="80" r="38" fill="url(#moon)"/><circle cx="1166" cy="70" r="7" fill="#e8cf98" opacity=".6"/>';
+  let x=-20;while(x<1420){const w=40+rnd()*60,h=110+rnd()*120;out+=`<rect x="${x.toFixed(0)}" y="${(440-h).toFixed(0)}" width="${w.toFixed(0)}" height="${h.toFixed(0)}" fill="#3a1830" opacity=".7"/>`;x+=w-4;}
+  out+='<g fill="url(#bA)"><rect x="300" y="190" width="90" height="250"/><rect x="315" y="150" width="60" height="45"/><rect x="330" y="118" width="30" height="36"/><rect x="340" y="92" width="10" height="28"/><rect x="343.5" y="40" width="3" height="54"/></g><circle class="twinkle" cx="345" cy="40" r="3.5" fill="#ff6b5e"/>';
+  out+='<g fill="url(#bA)"><rect x="900" y="210" width="70" height="230"/><path d="M905 212 Q935 130 965 212Z"/><rect x="933" y="110" width="4" height="40"/></g>';
+  for(let k=0;k<5;k++){out+=`<path d="M${912+k*2} ${200-k*14} Q935 ${176-k*14} ${958-k*2} ${200-k*14}" fill="none" stroke="#d8b46a" stroke-width="2" opacity=".7"/>`;}
+  x=-10;const near=[];while(x<1420){const w=70+rnd()*80,h=80+rnd()*120;near.push([x,w,h]);x+=w+6;}
+  near.forEach(([bx,w,h])=>{const top=440-h;out+=`<rect x="${bx.toFixed(0)}" y="${top.toFixed(0)}" width="${w.toFixed(0)}" height="${h.toFixed(0)}" fill="url(#bB)"/><rect x="${bx.toFixed(0)}" y="${top.toFixed(0)}" width="${w.toFixed(0)}" height="3" fill="#6a2a3a"/>`;
+    for(let wy=top+14;wy<430;wy+=18){for(let wx=bx+10;wx<bx+w-12;wx+=16){if(rnd()<.32)out+=`<rect x="${wx.toFixed(0)}" y="${wy.toFixed(0)}" width="7" height="9" fill="#f3d38c" opacity="${(rnd()*.5+.45).toFixed(2)}"/>`;}}});
+  const mx=560,my=262;
+  out+=`<circle cx="${mx+140}" cy="${my+40}" r="230" fill="url(#glow)"/><rect x="${mx}" y="${my+40}" width="280" height="140" fill="#1a0810"/><rect x="${mx+100}" y="${my+110}" width="80" height="70" fill="#f3d38c" opacity=".85"/><path d="M${mx-20} ${my+40}h320l-14 26H${mx-6}z" fill="#5c0f1a"/><rect x="${mx+10}" y="${my-40}" width="260" height="82" rx="6" fill="#5c0f1a" stroke="#d8b46a" stroke-width="4"/><rect x="${mx+24}" y="${my-26}" width="232" height="54" rx="3" fill="#fff6e6"/>`;
+  out+=`<text x="${mx+140}" y="${my-6}" text-anchor="middle" font-family="Figtree,sans-serif" font-weight="800" font-size="17" fill="#2a070c">STRANGER THINGS</text><text x="${mx+140}" y="${my+17}" text-anchor="middle" font-family="Figtree,sans-serif" font-weight="600" font-size="14" fill="#5c0f1a">TUE NOV 24 · 7 PM</text>`;
+  for(let b=0;b<20;b++){out+=`<circle class="${b%2?'twinkle':''}" cx="${mx+18+b*13.1}" cy="${my-34}" r="3" fill="#ffe39a"/><circle class="${b%2?'':'twinkle'}" cx="${mx+18+b*13.1}" cy="${my+36}" r="3" fill="#ffe39a"/>`;}
+  out+='<rect x="0" y="432" width="1400" height="8" fill="#12050a"/>';
+  s.innerHTML=out;
+}
+</script>
+</body>
+</html>
